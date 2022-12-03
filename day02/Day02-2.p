@@ -1,8 +1,7 @@
 define temp-table ttGame no-undo
   field GameId          as integer
   field OpponentPlay    as character
-  field MePlay          as character
-  field MePlayConverted as character.
+  field MePlay          as character.
   
 run readFile.
 run processData.
@@ -26,16 +25,6 @@ procedure readFile:
       ttGame.GameId       = viGame
       ttGame.OpponentPlay = entry(1, vcLijn, " ":u)
       ttGame.MePlay       = entry(2, vcLijn, " ":u).
-      
-    case ttGame.MePlay:
-      when "X":u then 
-        ttGame.MePlayConverted = "A":u.
-      when "Y":u then 
-        ttGame.MePlayConverted = "B":u.
-      when "Z":u then 
-        ttGame.MePlayConverted = "C":u.
-    end case. 
-
   end.
 
   input close.
