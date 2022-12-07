@@ -2,27 +2,18 @@ define temp-table ttFileStructure no-undo
   field DirectoryId as integer
   field LevelId     as integer 
   field FileName    as character
-  field FileSize    as int64
-  .  
-  
+  field FileSize    as int64.  
   
 define temp-table ttDirStructure no-undo 
   field ParentDirectoryId as integer
   field DirectoryId       as integer
   field DirectoryName     as character
   field DirectorySize     as int64.
-    
-  
+      
 etime(yes).
-
-//debugger:initiate().
-//debugger:set-break().
    
 run readFile.
-
-
 run processData.
-
 
 procedure readFile:
   define variable vcLijn               as character no-undo.
@@ -31,9 +22,7 @@ procedure readFile:
   define variable viDirectoryId        as integer   no-undo.
   define variable viParentDirectoryId  as integer   no-undo.
   define variable viCurrentDirectoryId as integer   no-undo.
-  
   define variable vcDirectoryTree      as character no-undo.
-  
   
   input from value(search("day07\day07_input")).
   
@@ -73,21 +62,16 @@ procedure readFile:
       do:
         if vcLijn begins "$ cd " then 
         do:
-          viParentDirectoryId = viCurrentDirectoryId.
-      
-      
-          viCurrentLevel = viCurrentLevel + 1.
-      
-          viDirectoryId = viDirectoryId + 1.
           create ttDirStructure.
           assign
+            viParentDirectoryId              = viCurrentDirectoryId    
+            viCurrentLevel                   = viCurrentLevel + 1      
+            viDirectoryId                    = viDirectoryId + 1      
             ttDirStructure.DirectoryId       = viDirectoryId
             ttDirStructure.DirectoryName     = entry(3, vcLijn, " ")
-            ttDirStructure.ParentDirectoryId = viParentDirectoryId.
-           
-          viCurrentDirectoryId = viDirectoryId.  
-      
-          vcDirectoryTree = vcDirectoryTree + "," + string(viDirectoryId).  
+            ttDirStructure.ParentDirectoryId = viParentDirectoryId           
+            viCurrentDirectoryId             = viDirectoryId
+            vcDirectoryTree                  = vcDirectoryTree + "," + string(viDirectoryId).  
         end.      
       end.
     end.
@@ -117,19 +101,22 @@ procedure processData:
   
   define variable viSum as integer no-undo.
   
-  for each ttDirStructure no-lock:
-    run getDirSize (input ttDirStructure.DirectoryId, output ttDirStructure.DirectorySize).
-    
-    if ttDirStructure.DirectorySize <= 100000 then 
-      viSum = viSum + ttDirStructure.DirectorySize. 
+  find ttDirStructure no-lock 
+    where ttDirStructure.ParentDirectoryId = 0
+    and ttDirStructure.DirectoryId = 0 no-error.
+  run getDirSize (input ttDirStructure.DirectoryId, output ttDirStructure.DirectorySize).
+  
+  for each ttDirStructure no-lock
+    where ttDirStructure.DirectorySize <= 100000: 
+    viSum = viSum + ttDirStructure.DirectorySize. 
   end.
   
-  message viSum
+  message viSum skip etime / 1000
     view-as alert-box information.
     
-    /*
+/*
     
-    ---------------------------
+---------------------------
 Information (Press HELP to view stack trace)
 ---------------------------
 1642503
@@ -137,7 +124,7 @@ Information (Press HELP to view stack trace)
 OK   Help   
 ---------------------------
     
-    */
+*/
     
  
 end procedure.
@@ -146,25 +133,20 @@ procedure getDirSize:
   define input parameter ipiDirectoryId as integer no-undo.
   define output parameter opiDirectorySize as int64 no-undo.
   
-  define variable viDirectorySize as int64 no-undo.
-  define variable viSubDirectorySize as int64 no-undo.
-  
-  define buffer ttDirStructure for ttDirStructure.
+  define buffer ttDirStructure  for ttDirStructure.
   define buffer ttFileStructure for ttFileStructure.
   
   for each ttFileStructure no-lock 
     where ttFileStructure.DirectoryId = ipiDirectoryId:
-    viDirectorySize = viDirectorySize + ttFileStructure.FileSize . 
+    opiDirectorySize = opiDirectorySize + ttFileStructure.FileSize . 
   end.  
   
   for each ttDirStructure no-lock
     where ttDirStructure.ParentDirectoryId = ipiDirectoryId
-      and ttDirStructure.DirectoryId <> ipiDirectoryId:
-    run getDirSize (input ttDirStructure.DirectoryId, output viSubDirectorySize).
+    and ttDirStructure.DirectoryId <> ipiDirectoryId:
+    run getDirSize (input ttDirStructure.DirectoryId, output ttDirStructure.DirectorySize).
     
-    viDirectorySize = viDirectorySize + viSubDirectorySize.
+    opiDirectorySize = opiDirectorySize + ttDirStructure.DirectorySize.
   end.
-  
-  opiDirectorySize = viDirectorySize.
   
 end procedure.
