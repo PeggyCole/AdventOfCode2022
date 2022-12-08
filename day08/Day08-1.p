@@ -2,7 +2,6 @@ define temp-table ttTree no-undo
   field ttColumn     as integer
   field ttRow  as integer
   field ttHeight  as integer
-  field ttVisible as logical
   index IE1 ttColumn
   index IE2 ttRow.  
   
@@ -56,11 +55,11 @@ procedure processData:
   define buffer ttTreeSearch for ttTree.
   
   define variable viVisible  as integer no-undo.
-  
-  define variable viPosition as integer no-undo.
   define variable vlVisible  as logical no-undo.
   
   for each ttTree no-lock:
+    
+    vlVisible = no.
     
     if ttTree.ttColumn = 1 
       or ttTree.ttRow = 1 
@@ -68,7 +67,7 @@ procedure processData:
       or ttTree.ttRow = viMaxRow
       then 
     do:
-      ttTree.ttVisible = true.  
+      vlVisible = true.  
     end.  
     else 
     do:
@@ -78,7 +77,7 @@ procedure processData:
         and ttTreeSearch.ttRow < ttTree.ttRow
         and ttTreeSearch.ttHeight >= ttTree.ttHeight
         no-error.
-      if not available ttTreeSearch then ttTree.ttVisible = true. 
+      if not available ttTreeSearch then vlVisible = true. 
       
       
       if not vlVisible then 
@@ -89,7 +88,7 @@ procedure processData:
           and ttTreeSearch.ttRow = ttTree.ttRow
           and ttTreeSearch.ttHeight >= ttTree.ttHeight
           no-error.
-        if not available ttTreeSearch then ttTree.ttVisible = true. 
+        if not available ttTreeSearch then vlVisible = true. 
       end.
       
       if not vlVisible then 
@@ -100,7 +99,7 @@ procedure processData:
           and ttTreeSearch.ttRow > ttTree.ttRow
           and ttTreeSearch.ttHeight >= ttTree.ttHeight
           no-error.
-        if not available ttTreeSearch then ttTree.ttVisible = true. 
+        if not available ttTreeSearch then vlVisible = true. 
       end.
  
       if not vlVisible then 
@@ -111,12 +110,12 @@ procedure processData:
           and ttTreeSearch.ttRow = ttTree.ttRow
           and ttTreeSearch.ttHeight >= ttTree.ttHeight
           no-error.
-        if not available ttTreeSearch then ttTree.ttVisible = true.
+        if not available ttTreeSearch then vlVisible = true.
       end.
       
     end.
     
-    if ttTree.ttVisible then 
+    if vlVisible then 
       viVisible = viVisible + 1.
   
   end.  
