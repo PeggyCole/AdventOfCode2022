@@ -61,7 +61,6 @@ procedure processData:
   define variable viScoreRight     as integer no-undo.
   define variable viScoreTop       as integer no-undo.
   define variable viScoreBottom    as integer no-undo.
-  define variable viPrev           as integer no-undo.
   
   for each ttTree no-lock:
     // Top
@@ -98,7 +97,6 @@ procedure processData:
 
     // Right Side      
     viScoreRight = 0.
-    viPrev = 999.
     for each ttTreeSearch no-lock
       where ttTreeSearch.ttColumn > ttTree.ttColumn
       and ttTreeSearch.ttRow  = ttTree.ttRow 
