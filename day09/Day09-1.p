@@ -2,7 +2,8 @@ etime(yes).
 
 define temp-table ttVisitedByTail no-undo
   field PositionX as integer 
-  field PositionY as integer.
+  field PositionY as integer
+  index PK as primary unique PositionX PositionY.
 
 define variable vcLijn          as character no-undo.
 define variable viHeadX         as integer   no-undo initial 1.
@@ -90,7 +91,7 @@ for each ttVisitedByTail no-lock:
   viVisitedByTail = viVisitedByTail + 1.
 end.
 
-message viVisitedByTail view-as alert-box information.
+message viVisitedByTail skip etime / 1000 view-as alert-box information.
 
 /*
 ---------------------------

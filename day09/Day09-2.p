@@ -2,12 +2,14 @@ etime(yes).
 
 define temp-table ttVisitedByTail no-undo
   field PositionX as integer 
-  field PositionY as integer.
+  field PositionY as integer
+  index PK as primary unique PositionX PositionY.
   
 define temp-table ttKnot no-undo
   field KnotId    as integer
   field PositionX as integer 
-  field PositionY as integer.
+  field PositionY as integer
+  index PK as primary unique KnotId.
   
 
 define variable vcLijn          as character no-undo.
@@ -34,9 +36,6 @@ assign
   ttVisitedByTail.PositionY = 1.
   
 input from value(search("day09\day09_input")).
-
-debugger:initiate().
-debugger:set-break().
 
 repeat 
   on error undo, leave 
@@ -130,7 +129,7 @@ for each ttVisitedByTail no-lock:
   viVisitedByTail = viVisitedByTail + 1.
 end.
 
-message viVisitedByTail view-as alert-box information.
+message viVisitedByTail skip etime / 1000 view-as alert-box information.
 
 /*
 ---------------------------
