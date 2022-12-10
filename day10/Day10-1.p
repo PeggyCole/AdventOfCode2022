@@ -16,18 +16,14 @@ repeat
   on endkey undo, leave:
        
   import unformatted vcLijn.
-  
-  if vcLIjn eq "noop" then 
-  do:
-    viCycle = viCycle + 1.
+
+  viCycle = viCycle + 1.
     
+  if vcLIjn eq "noop" then 
     run CheckCycles (viCycle, input-output viCalculateOnCycle, input-output viRegisterValue, 0).
-  end.
   else 
   do:
-    viCycle = viCycle + 1.
     run CheckCycles (viCycle, input-output viCalculateOnCycle, input-output viRegisterValue, 0).
-    
     viCycle = viCycle + 1.
     run CheckCycles (viCycle, input-output viCalculateOnCycle, input-output viRegisterValue, int(entry(2, vcLijn, " "))). 
   end. 
@@ -44,12 +40,21 @@ procedure CheckCycles:
   define input        parameter ipiValueToAdd        as integer     no-undo.
 
   if ipiCycles = iopiCalculateOnCycle then 
-  do:
     assign
-      viTotalRegisterValue    = viTotalRegisterValue + (iopiRegisterValue * iopiCalculateOnCycle)
+      viTotalRegisterValue = viTotalRegisterValue + (iopiRegisterValue * iopiCalculateOnCycle)
       iopiCalculateOnCycle = iopiCalculateOnCycle + 40.
-  end.
   
-  iopiRegisterValue    = iopiRegisterValue + ipiValueToAdd.
+  iopiRegisterValue = iopiRegisterValue + ipiValueToAdd.
 end procedure.
 
+/*
+---------------------------
+Information (Press HELP to view stack trace)
+---------------------------
+14780 
+,001
+---------------------------
+OK   Help   
+---------------------------
+
+*/
